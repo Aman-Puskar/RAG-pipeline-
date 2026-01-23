@@ -59,7 +59,7 @@ def create_chunks(documents):
 
 # creation of embeddings and storing 
 
-pc = Pinecone(api_key="pcsk_2tp4k5_FVDovQsf9PbviQ6FJSPi7Enxxog2yzxBJC7cWNFFmQnm6udLMAYNrzAgKV1KVLY")
+pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
 index_name = "rag-index"
 
 # Create index if not exists

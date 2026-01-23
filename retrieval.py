@@ -6,11 +6,9 @@ from transformers import pipeline
 # from speech_input import get_user_query
 
 import google.generativeai as genai
-
-PINECONE_API_KEY = "pcsk_2tp4k5_FVDovQsf9PbviQ6FJSPi7Enxxog2yzxBJC7cWNFFmQnm6udLMAYNrzAgKV1KVLY"
 INDEX_NAME = "rag-index"
 
-pc = Pinecone(api_key=PINECONE_API_KEY)
+pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
 index = pc.Index(INDEX_NAME)
 
 embedding_model = HuggingFaceEmbeddings(
