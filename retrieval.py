@@ -1,10 +1,11 @@
+import os
 from pinecone import Pinecone
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from openai import OpenAI
 from transformers import pipeline
 # from speech_input import get_user_query
 
-from google import genai
+import google.generativeai as genai
 
 PINECONE_API_KEY = "pcsk_2tp4k5_FVDovQsf9PbviQ6FJSPi7Enxxog2yzxBJC7cWNFFmQnm6udLMAYNrzAgKV1KVLY"
 INDEX_NAME = "rag-index"
@@ -72,11 +73,9 @@ def generate_answer(query: str, context: str):
     # )
     
     # return response.choices[0].message["content"]
-    client = genai.Client(api_key="AIzaSyCz6HN-bPQeLvS3E0PGkB24KMMzG9vE4Fg")
-    response = client.models.generate_content(
-        model="gemini-flash-lite-latest",
-        contents=prompt
-    )
+    genai.configure(api_key=os.getenv("GEMINI_LLM_KEY"))
+    model = genai.GenerativeModel(model_name="gemini-flash-lite-latest")
+    response = model.generate_content(prompt)
     answer = response.text
     # return answer[0]["generated_text"].strip()
     return answer
