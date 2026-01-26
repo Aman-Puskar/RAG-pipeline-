@@ -32,8 +32,8 @@ def retreive_context(query:str, top_k = 10):
     )
     
     # chunks retreived 
-    for match in results["matches"]:
-        print(f"\n{match["metadata"]["text"]} ---->{match["metadata"]["source"]}----> page no.{match["metadata"]["page"]}\n\n")
+    # for match in results["matches"]:
+    #     print(f"\n{match["metadata"]["text"]} ---->{match["metadata"]["source"]}----> page no.{match["metadata"]["page"]}\n\n")
         
     context = "\n\n".join([m["metadata"]["text"]for m in results['matches']])
     return context
@@ -49,6 +49,7 @@ def generate_answer(query: str, context: str):
             - If you dont't understand the question ask for clarification.
             - Rewrite in your own natural words.
             - Combine information if needed.
+            - If there are mutiple points, list them in seperate lines.
             - Keep the tone conversational, clear, and human-like.
             - Give answers to all the parts of query the seperatly.
             - If the query is about confidential data or password then say "Cant't help with this request"
@@ -84,10 +85,10 @@ def rag_pipeline(query: str):
     return answer
 
 
-if __name__ == "__main__":
-    while True:
+# if __name__ == "__main__":
+#     while True:
         
-        query = input("\nAsk a question: ")
-        # query = get_user_query() 
+#         query = input("\nAsk a question: ")
+#         # query = get_user_query() 
 
-        print("\nANSWER:\n", rag_pipeline(query))
+#         print("\nANSWER:\n", rag_pipeline(query))
