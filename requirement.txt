@@ -1,0 +1,9 @@
+fastapi==0.111.1             # for building API endpoints
+uvicorn==0.23.1              # ASGI server for FastAPI
+openai==0.28.0               # OpenAI API
+pinecone-client==2.2.2       # Pinecone vector database
+langchain==0.1.155           # RAG framework
+python-dotenv==1.0.1         # Load .env locally
+pypdf==3.12.0                # PDF reading & parsing
+tqdm==4.66.1                 # progress bars (optional, useful)
+requests==2.32.0             # for HTTP requests if needed
