@@ -1,8 +1,6 @@
 import os
 from pinecone import Pinecone
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from openai import OpenAI
-from transformers import pipeline
 # from speech_input import get_user_query
 
 import google.generativeai as genai
