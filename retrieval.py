@@ -3,7 +3,8 @@ from pinecone import Pinecone
 from langchain_community.embeddings import HuggingFaceEmbeddings
 # from speech_input import get_user_query
 
-import google.generativeai as genai
+# import google.generativeai as genai
+from google import genai  # Import the NEW library
 INDEX_NAME = "rag-index"
 
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
@@ -70,9 +71,19 @@ def generate_answer(query: str, context: str):
     # )
     
     # return response.choices[0].message["content"]
-    genai.configure(api_key=os.getenv("GEMINI_LLM_KEY"))
-    model = genai.GenerativeModel(model_name="gemini-flash-lite-latest")
-    response = model.generate_content(prompt)
+    # genai.configure(api_key=os.getenv("GEMINI_LLM_KEY"))
+    # # model = genai.GenerativeModel(model_name="gemini-1.0-pro")
+    # # model = genai.GenerativeModel("gemini-pro")
+    # model = genai.GenerativeModel("gemini-1.5-flash")
+
+    client = genai.Client(api_key=os.getenv("GEMINI_LLM_KEY"))
+
+    # response = model.generate_content(prompt)
+
+    response = client.models.generate_content(
+       model="gemini-flash-latest",
+        contents=prompt
+    )
     answer = response.text
     # return answer[0]["generated_text"].strip()
     return answer
