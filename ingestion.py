@@ -1,13 +1,24 @@
 import os
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
+# from langchain_community.embeddings import HuggingFaceEmbeddings
+# from langchain_openai import OpenAIEmbeddings
+
+# from langchain_community.embeddings import CohereEmbeddings
+from langchain_cohere import CohereEmbeddings
 from pinecone import Pinecone, ServerlessSpec
+from dotenv import load_dotenv
+load_dotenv()
 
-
-embedding_model = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
+embedding_model = CohereEmbeddings(
+    model="embed-english-light-v3.0",  # free + fast
+    cohere_api_key=os.getenv("COHERE_API_KEY")
 )
+
+
+# embedding_model = HuggingFaceEmbeddings(
+#     model_name="sentence-transformers/all-MiniLM-L6-v2"
+# )
 
 # cleaning of the text extracted from the source
 def clean_text(text):
@@ -60,13 +71,13 @@ def create_chunks(documents):
 # creation of embeddings and storing 
 
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-index_name = "rag-index"
+index_name = "rag-index-cohere"
 
 # Create index if not exists
 if index_name not in [i['name'] for i in pc.list_indexes()]:
     pc.create_index(
         name=index_name,
-        dimension=384,  
+        dimension=1024,  
         metric="cosine",
         spec=ServerlessSpec(
             cloud="aws", 
@@ -77,11 +88,39 @@ if index_name not in [i['name'] for i in pc.list_indexes()]:
 
 index = pc.Index(index_name)
 
+# def store_in_pinecone(chunks):
+#     vectors = []
+
+#     for chunk in chunks:
+#         embedding = embedding_model.embed_documents(chunk.page_content)
+
+#         vector_data = {
+#             "id": f"chunk_{chunk.metadata['chunk_id']}",
+#             "values": embedding,
+#             "metadata": {
+#                 "text": chunk.page_content,
+#                 "source": chunk.metadata.get("source"),
+#                 "page": chunk.metadata.get("page"),
+#                 "chunk_id": chunk.metadata.get("chunk_id")
+#             }
+#         }
+
+#         vectors.append(vector_data)
+
+#     print(f"\nUploading {len(vectors)} vectors to Pinecone...")
+
+#     for i in range(0, len(vectors), 100):
+#         batch = vectors[i : i + 100]
+#         index.upsert(vectors=batch)
+
+#     print("All vectors uploaded successfully!")
 def store_in_pinecone(chunks):
     vectors = []
 
     for chunk in chunks:
-        embedding = embedding_model.embed_documents(chunk.page_content)
+        embedding = embedding_model.embed_documents(
+            [chunk.page_content]
+        )[0]
 
         vector_data = {
             "id": f"chunk_{chunk.metadata['chunk_id']}",
@@ -103,6 +142,7 @@ def store_in_pinecone(chunks):
         index.upsert(vectors=batch)
 
     print("All vectors uploaded successfully!")
+
 
 documents = load_all_pdf("sampleFolder")
 chunks = create_chunks(documents)
